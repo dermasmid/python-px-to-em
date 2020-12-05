@@ -1,0 +1,43 @@
+#!/bin/python3
+try:
+    import tkinter
+    copy_to_clip = True
+except ImportError:
+    print('tkinter not installed - copy to clipboard will not be available')
+    copy_to_clip = False
+
+if copy_to_clip:
+    win = tkinter.Tk()
+    win.withdraw()
+
+px_in_em = float(input('Set default px in em (Leave empty for default of 16): ') or 16)
+
+unit_format = input('Enter unit (Leave empty for default of em): ') or 'em'
+
+if copy_to_clip:
+    copy_to_clip = ('y' in input('copy to and from clipboard? (y/n): '))
+
+def get_clipboard():
+    return win.clipboard_get().strip()
+
+def set_clipboard(text):
+    win.clipboard_clear()
+    win.clipboard_append(text)
+
+
+while True:
+    px_in = input('Enter px (Or leave empty to copy from clipboard): ')
+    if copy_to_clip and not px_in:
+        px_in = get_clipboard()
+    pxs = list(float(px) for part in px_in.split(' ') for px in [''.join(list(char for char in part if (char.isdigit() or char == '.')))] if px)
+
+    if not pxs:
+        print('No valid value passed!!!')
+        continue
+
+
+    result = ' '.join(f'{px / px_in_em}{unit_format}' for px in pxs)
+    if copy_to_clip:
+        set_clipboard(result)
+
+    print(result)
